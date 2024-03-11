@@ -1,8 +1,11 @@
+import logging
 from typing import Tuple
 
 import cv2
 import numpy as np
 from numpy import ndarray
+
+logger = logging.getLogger("logger")
 
 
 class ImageHandlers:
@@ -10,12 +13,12 @@ class ImageHandlers:
 
     @classmethod
     def resize(
-        cls,
-        image: ndarray,
-        height: int,
-        width: int,
-        save_ratio: bool = False,
-        side: str = None,
+            cls,
+            image: ndarray,
+            height: int,
+            width: int,
+            save_ratio: bool = False,
+            side: str = None,
     ) -> ndarray:
         """
         Изменение размера изображения
@@ -37,7 +40,7 @@ class ImageHandlers:
 
     @classmethod
     def crop(
-        cls, image: ndarray, top: int, bottom: int, left: int, right: int
+            cls, image: ndarray, top: int, bottom: int, left: int, right: int
     ) -> ndarray:
         """
         Обрезка изображения
@@ -49,7 +52,7 @@ class ImageHandlers:
         :return: Изображение в виде массива ndarray
         """
         height, width, _ = image.shape
-        image = image[top : (height - bottom), left : (width - right)]
+        image = image[top: (height - bottom), left: (width - right)]
         return image
 
     @classmethod
@@ -116,7 +119,7 @@ class ImageHandlers:
 
 
 def image_handler(
-    image_path: str, handlers: ImageHandlers = ImageHandlers, **kwargs
+        image_path: str, handlers: ImageHandlers = ImageHandlers, **kwargs
 ) -> ndarray:
     """
     Применение обработчиков к изображению

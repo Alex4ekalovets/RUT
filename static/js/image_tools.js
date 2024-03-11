@@ -16,16 +16,18 @@ let blue = document.getElementById('blue')
 let properties = document.querySelectorAll(".param")
 let save_ratio_side = ''
 
+let current_file = ''
+
 document.getElementById('imageFile').onchange = async function () {
     let file = this.files[0];
     let formData = new FormData();
 
     formData.append("file", file);
-    let response = await fetch('/uploadfile', {method: "POST", body: formData});
+    let response = await fetch('/image_tools/uploadfile', {method: "POST", body: formData});
 
     if (response.ok) {
         let data = await response.json()
-        imageView.src = `/image/?name=${data.filename}`
+        imageView.src = `/image_tools/image/?name=${data.filename}`
         imageLabel.innerHTML = `${data.filename}`
         width.value = Number(data.width)
         height.value = Number(data.height)
@@ -38,7 +40,9 @@ document.getElementById('imageFile').onchange = async function () {
         green.value = 0
         blue.value = 0
         rotate.value = 0
+        current_file = data.filename
     }
+
 }
 
 async function postData(url = '', data = {}) {
@@ -89,12 +93,21 @@ properties.forEach(function (c) {
                     save_ratio_side = c.id
                 }
             }
-            console.log(data)
 
-          let response = await postData("/change", data)
+          let response = await postData("/image_tools/change", data)
           if (response.ok) {
             let json = await response.json()
-            imageView.src = `/image/?name=${json.filename}`
+            imageView.src = `/image_tools/image/?name=${json.filename}`
+            current_file = json.filename
           }
     }
 });
+
+document.getElementById('saveImageBtn').onclick = function () {
+    fetch(`/image_tools/save/?name=${current_file}`)
+      .then( res => res.blob() )
+      .then( blob => {
+        var file = window.URL.createObjectURL(blob);
+        window.location.assign(file);
+      });
+}

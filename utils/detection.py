@@ -1,11 +1,12 @@
 import logging
 import os
 
-from imutils import paths
 from numpy import ndarray
 import settings
 
 import cv2
+
+from utils.image_tools import convert_image_to_bytes
 
 logger = logging.getLogger("logger")
 
@@ -19,22 +20,21 @@ class Detector:
     def __init__(self, model: str, use_cuda: bool = False):
         self.model = model
         self.cuda = use_cuda
+        self.scaleFactor = 1.05
+        self.minNeighbors = 4
 
-    def images_handler(self, path: str) -> list[ndarray]:
+    def processed_image_generator(self, images_paths: list[str]) -> list[ndarray]:
         """
-        Обработка всех изображений из указанной директории
-        :param path: Путь к директории с файлами изображений
+        Генератор обработанных изображений из указанной директории
+        :param images_paths: Список путей файлов с изображениями
         :return:
         """
-        images_paths = list(paths.list_images(path))
-        output_images = list()
         for image_path in images_paths:
             if self.cuda:
                 image = self.cuda_detect(image_path)
             else:
                 image = self.detect(image_path)
-            output_images.append(image)
-        return output_images
+            yield image
 
     def detect(self, image_path: str) -> ndarray:
         """
@@ -46,7 +46,7 @@ class Detector:
         image = cv2.imread(image_path)
         image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         cascade = cv2.CascadeClassifier(self.model)
-        boxes = cascade.detectMultiScale(image_gray, scaleFactor=1.05, minNeighbors=4)
+        boxes = cascade.detectMultiScale(image_gray, self.scaleFactor, self.minNeighbors)
         for x, y, width, height in boxes:
             cv2.rectangle(image, (x, y), (x + width, y + height), color=(0, 255, 0), thickness=2)
         return image
@@ -72,10 +72,30 @@ class Detector:
 
 class FaceDetector(Detector):
     def __init__(self, model: str = haar_face_model, use_cuda: bool = False):
-        self.model = model
-        self.cuda = use_cuda
+        super().__init__(model, use_cuda)
 
 
-if __name__ == "__main__":
+def detect_faces_and_save(images: list[str], path_to: str = None, prefix: str = '') -> list:
+    """
+    Обнаруживает лица на изображениях и сохраняет в новый файл или перезаписывает
+    :param images: Список путей файлов с изображениями
+    :param path_to: Путь для сохранения новых файлов
+    :param prefix: Префикс для новых файлов с изображениями
+    :return: Список имен новых файлов с изображениями
+    """
+    logger.debug(f'{images=}')
     detector = FaceDetector()
-    detector.images_handler("/Users/MacAlex/WorkFolder/Python/Projects/RUT/test_data")
+    new_filenames = []
+    i = 0
+    for image in detector.processed_image_generator(images):
+        image_bytes = convert_image_to_bytes(image)
+        new_filename = f'{prefix}{os.path.basename(images[i])}'
+        new_filenames.append(new_filename)
+        if path_to:
+            new_file_path = os.path.join(path_to, new_filename)
+        else:
+            new_file_path = os.path.join(os.path.dirname(images[i]), new_filename)
+        with open(new_file_path, "wb") as new_image:
+            new_image.write(image_bytes)
+        i += 1
+    return new_filenames
