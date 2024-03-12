@@ -82,12 +82,12 @@ async def change_image(properties: ImageProperties):
     properties = properties.dict()
 
     name = properties.pop("name")
-    file_path = f"media/{name}"
+    file_path = os.path.join("media", name)
     changed_image = image_handler(file_path, **properties)
     image_bytes = convert_image_to_bytes(changed_image)
 
     new_name = f"new_{name}"
-    new_file_path = f"media/{new_name}"
+    new_file_path = os.path.join("media", new_name)
     with open(new_file_path, "wb") as image:
         image.write(image_bytes)
 

@@ -1,3 +1,5 @@
+import os.path
+
 import cv2
 import numpy as np
 import pytest
@@ -6,7 +8,7 @@ from utils.image_tools import image_handler
 
 
 def test_image_handler_resize_pass():
-    file = r".\tests\data\image_handler_resize_test_image.jpg"
+    file = os.path.join("tests", "data", "image_handler_resize_test_image.jpg")
     params = {
         "resize": {
             "width": 1000,
@@ -20,7 +22,7 @@ def test_image_handler_resize_pass():
 
 def test_image_handler_resize_fail():
     with pytest.raises(cv2.error):
-        file = r".\tests\data\image_handler_resize_test_image.jpg"
+        file = os.path.join("tests", "data", "image_handler_resize_test_image.jpg")
         params = {
             "resize": {
                 "width": -1000,
@@ -33,7 +35,7 @@ def test_image_handler_resize_fail():
 
 
 def test_image_handler_rotate_pass():
-    file = r".\tests\data\image_handler_angle_test_image.jpg"
+    file = os.path.join("tests", "data", "image_handler_angle_test_image.jpg")
     params = {
         "rotate": {
             "angle": 90,
@@ -43,7 +45,7 @@ def test_image_handler_rotate_pass():
 
 
 def test_image_handler_rgb_pass():
-    file = r".\tests\data\image_handler_rgb_test_image.jpg"
+    file = os.path.join("tests", "data", "image_handler_rgb_test_image.jpg")
     params = {
         "rgb": {
             "red": 10,
@@ -56,7 +58,7 @@ def test_image_handler_rgb_pass():
 
 
 def test_image_handler_crop_pass():
-    file = r".\tests\data\image_handler_crop_test_image.jpg"
+    file = os.path.join("tests", "data", "image_handler_crop_test_image.jpg")
     params = {
         "crop": {
             "top": 10,
