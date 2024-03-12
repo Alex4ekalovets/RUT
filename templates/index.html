@@ -29,17 +29,12 @@
                         <!-- Image Card Body -->
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-xl-1 mt-2">
-                                    <a class="btn btn-outline-secondary btn-lg app_button"
-                                       href="{{ url_for('image_tools') }}" role="button">Image Tools</a>
-                                </div>
-                                <div class="col-xl-1 mt-2">
-                                    <a class="btn btn-outline-secondary btn-lg app_button "
-                                       href="{{ url_for('detection') }}"
-                                       role="button">Detection</a>
-                                </div>
+                                <a class="btn btn-outline-secondary btn-lg mr-2 ml-2 mt-2"
+                                   href="{{ url_for('image_tools') }}" role="button">Image Tools</a>
+                                <a class="btn btn-outline-secondary btn-lg mr-2 ml-2 mt-2"
+                                   href="{{ url_for('detection') }}"
+                                   role="button">Detection</a>
                             </div>
-
 
                         </div>
                     </div>
